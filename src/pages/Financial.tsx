@@ -11,7 +11,7 @@ export const Financial = () => {
   const [expenses, setExpenses] = useState<any[]>([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [isAddingExpense, setIsAddingExpense] = useState(false);
-  const [newExpense, setNewExpense] = useState({ description: '', amount: 0, date: format(new Date(), 'yyyy-MM-dd') });
+  const [newExpense, setNewExpense] = useState({ description: '', amount: '' as number | string, date: format(new Date(), 'yyyy-MM-dd') });
 
   const fetchData = async () => {
     if (!user) return;
@@ -45,8 +45,13 @@ export const Financial = () => {
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    await supabase.from('expenses').insert({ user_id: user.id, ...newExpense });
-    setNewExpense({ description: '', amount: 0, date: format(new Date(), 'yyyy-MM-dd') });
+    
+    // Garante que o valor seja um número antes de inserir
+    const amountValue = Number(newExpense.amount);
+    if (isNaN(amountValue) || amountValue <= 0) return;
+
+    await supabase.from('expenses').insert({ user_id: user.id, ...newExpense, amount: amountValue });
+    setNewExpense({ description: '', amount: '', date: format(new Date(), 'yyyy-MM-dd') });
     setIsAddingExpense(false);
     fetchData();
   };
@@ -114,7 +119,14 @@ export const Financial = () => {
                     </div>
                     <div className="w-full md:w-32">
                         <label className="text-xs font-bold text-gray-500 uppercase">Valor (R$)</label>
-                        <input required type="number" step="0.01" className="w-full p-2 border rounded-lg" value={newExpense.amount} onChange={e => setNewExpense({...newExpense, amount: Number(e.target.value)})} />
+                        <input 
+                          required 
+                          type="number" 
+                          step="0.01" 
+                          className="w-full p-2 border rounded-lg" 
+                          value={newExpense.amount} 
+                          onChange={e => setNewExpense({...newExpense, amount: e.target.value})} 
+                        />
                     </div>
                     <div className="w-full md:w-40">
                         <label className="text-xs font-bold text-gray-500 uppercase">Data</label>
