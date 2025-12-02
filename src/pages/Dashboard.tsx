@@ -63,7 +63,7 @@ export const Dashboard = () => {
             Ver meu Link
           </Link>
           <Link 
-            to="/dashboard/appointments" 
+            to="/dashboard/manual-booking" 
             className="flex-1 md:flex-none text-center px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200"
           >
             + Novo Agendamento
@@ -138,7 +138,7 @@ export const Dashboard = () => {
               ) : (
                 <div className="py-8 text-center text-gray-400">
                   <p>Nenhum agendamento futuro encontrado.</p>
-                  <Link to="/dashboard/appointments" className="text-white underline mt-2 inline-block">Agendar agora</Link>
+                  <Link to="/dashboard/manual-booking" className="text-white underline mt-2 inline-block">Agendar agora</Link>
                 </div>
               )}
             </div>

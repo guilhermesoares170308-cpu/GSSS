@@ -15,6 +15,7 @@ import { BookingSettings } from './pages/BookingSettings'; // Importado
 import { BookingLink } from './pages/BookingLink';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
+import { ManualBooking } from './pages/ManualBooking'; // Importado
 
 // Componente para proteger rotas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -83,6 +84,11 @@ function App() {
               <Route path="/dashboard/booking-link" element={ // Nova Rota
                 <ProtectedRoute>
                   <BookingSettings />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/manual-booking" element={ // Nova Rota de Agendamento Manual
+                <ProtectedRoute>
+                  <ManualBooking />
                 </ProtectedRoute>
               } />
             </Routes>
