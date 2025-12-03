@@ -12,6 +12,7 @@ export const ProfileSettingsForm: React.FC = () => {
   useEffect(() => {
     if (user) {
         setLoading(true);
+        // 1. Fetch name from profiles table
         supabase.from('profiles').select('name').eq('id', user.id).single()
         .then(({ data }) => {
             if (data) setProfileName(data.name || '');
@@ -28,19 +29,29 @@ export const ProfileSettingsForm: React.FC = () => {
     
     const toastId = showLoading('Salvando perfil...');
 
-    const { error } = await supabase.from('profiles').update({
-        name: profileName,
-        updated_at: new Date().toISOString()
-    }).eq('id', user.id);
+    try {
+        // 1. Update the profiles table
+        const { error: profileError } = await supabase.from('profiles').update({
+            name: profileName,
+            updated_at: new Date().toISOString()
+        }).eq('id', user.id);
 
-    setLoading(false);
-    dismissToast(toastId);
+        if (profileError) throw profileError;
 
-    if (error) {
+        // 2. Update user metadata (used by AuthContext)
+        const { error: authError } = await supabase.auth.updateUser({
+            data: { name: profileName }
+        });
+
+        if (authError) throw authError;
+
+        showSuccess('Nome profissional atualizado com sucesso!');
+    } catch (error) {
         showError('Falha ao salvar o nome.');
         console.error(error);
-    } else {
-        showSuccess('Nome profissional atualizado com sucesso!');
+    } finally {
+        setLoading(false);
+        dismissToast(toastId);
     }
   };
 
