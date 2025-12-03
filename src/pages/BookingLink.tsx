@@ -18,9 +18,14 @@ import { cn, formatCurrency } from '../lib/utils';
 import { Service, BusinessHours } from '../types';
 import { supabase } from '../lib/supabase';
 
-// Default hours fallback
+// Default hours fallback (updated to 7 days)
+const defaultDaySchedule = { enabled: true, start: '09:00', end: '18:00' };
 const defaultHours: BusinessHours = {
-  weekdays: { enabled: true, start: '09:00', end: '18:00' },
+  monday: defaultDaySchedule,
+  tuesday: defaultDaySchedule,
+  wednesday: defaultDaySchedule,
+  thursday: defaultDaySchedule,
+  friday: defaultDaySchedule,
   saturday: { enabled: true, start: '09:00', end: '14:00' },
   sunday: { enabled: false, start: '00:00', end: '00:00' },
 };
@@ -103,7 +108,9 @@ export const BookingLink = () => {
         setProfessionalName(profile?.name || 'Profissional Nailify');
         
         if (profile?.business_hours) {
-          setBusinessHours(profile.business_hours as unknown as BusinessHours);
+          // Merge com default para garantir que todos os 7 dias existam, caso o formato antigo tenha sido salvo
+          const fetchedHours = profile.business_hours as unknown as BusinessHours;
+          setBusinessHours({ ...defaultHours, ...fetchedHours });
         } else {
           setBusinessHours(defaultHours);
         }
@@ -141,12 +148,12 @@ export const BookingLink = () => {
     if (!selectedService || !selectedDate || !businessHours) return;
 
     const dateObj = parseISO(selectedDate);
-    const dayOfWeek = dateObj.getDay(); // 0 = Sun, 6 = Sat
+    const dayOfWeek = dateObj.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
     
-    let dayConfig;
-    if (dayOfWeek === 0) dayConfig = businessHours.sunday;
-    else if (dayOfWeek === 6) dayConfig = businessHours.saturday;
-    else dayConfig = businessHours.weekdays;
+    const dayKeys: (keyof BusinessHours)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayKey = dayKeys[dayOfWeek];
+    
+    const dayConfig = businessHours[dayKey];
 
     if (!dayConfig || !dayConfig.enabled) {
       setAvailableSlots([]);
@@ -175,7 +182,7 @@ export const BookingLink = () => {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
     while (currentPointer + serviceDuration <= endMinutes) {
-      // Se for hoje e o horário já passou, pula
+      // Se for hoje e o horário já passou, pula (com buffer de 30 min)
       if (isTodayDate && currentPointer < currentMinutes + 30) { 
         currentPointer += 30; 
         continue;

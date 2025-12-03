@@ -19,8 +19,13 @@ interface NailifyContextType {
   refreshData: () => Promise<void>;
 }
 
+const defaultDaySchedule = { enabled: true, start: '09:00', end: '18:00' };
 const defaultHours: BusinessHours = {
-  weekdays: { enabled: true, start: '09:00', end: '18:00' },
+  monday: defaultDaySchedule,
+  tuesday: defaultDaySchedule,
+  wednesday: defaultDaySchedule,
+  thursday: defaultDaySchedule,
+  friday: defaultDaySchedule,
   saturday: { enabled: true, start: '09:00', end: '14:00' },
   sunday: { enabled: false, start: '00:00', end: '00:00' },
 };
@@ -45,7 +50,9 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     
     // Se houver business_hours no perfil, usa. Caso contrário, usa o default.
     if (profile?.business_hours) {
-      setBusinessHours(profile.business_hours as unknown as BusinessHours);
+      // Merge com default para garantir que todos os 7 dias existam, caso o formato antigo tenha sido salvo
+      const fetchedHours = profile.business_hours as unknown as BusinessHours;
+      setBusinessHours({ ...defaultHours, ...fetchedHours });
     } else {
       setBusinessHours(defaultHours);
     }
@@ -112,7 +119,6 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!user) return;
     
     // Usamos upsert para garantir que o perfil seja criado se não existir
-    // Isso corrige casos onde o trigger de criação falhou ou não rodou
     const { error } = await supabase.from('profiles').upsert({
       id: user.id,
       business_hours: hours,

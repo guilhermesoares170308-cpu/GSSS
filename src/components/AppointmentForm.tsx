@@ -40,12 +40,12 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSuccess }) =
     if (!selectedService || !businessHours) return [];
 
     const dateObj = parseISO(selectedDate);
-    const dayOfWeek = dateObj.getDay(); // 0 = Sun, 6 = Sat
+    const dayOfWeek = dateObj.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
     
-    let dayConfig;
-    if (dayOfWeek === 0) dayConfig = businessHours.sunday;
-    else if (dayOfWeek === 6) dayConfig = businessHours.saturday;
-    else dayConfig = businessHours.weekdays;
+    const dayKeys: (keyof BusinessHours)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayKey = dayKeys[dayOfWeek];
+    
+    const dayConfig = businessHours[dayKey];
 
     if (!dayConfig || !dayConfig.enabled) {
       return [];

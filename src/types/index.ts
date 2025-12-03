@@ -26,7 +26,11 @@ export type DaySchedule = {
 };
 
 export type BusinessHours = {
-  weekdays: DaySchedule;
+  monday: DaySchedule;
+  tuesday: DaySchedule;
+  wednesday: DaySchedule;
+  thursday: DaySchedule;
+  friday: DaySchedule;
   saturday: DaySchedule;
   sunday: DaySchedule;
 };
