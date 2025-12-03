@@ -11,11 +11,13 @@ import { Appointments } from './pages/Appointments';
 import { Inventory } from './pages/Inventory';
 import { Financial } from './pages/Financial';
 import { Settings } from './pages/Settings';
-import { BookingSettings } from './pages/BookingSettings'; // Importado
+import { BookingSettings } from './pages/BookingSettings';
 import { BookingLink } from './pages/BookingLink';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
-import { ManualBooking } from './pages/ManualBooking'; // Importado
+import { ManualBooking } from './pages/ManualBooking';
+import { ForgotPassword } from './pages/auth/ForgotPassword'; // Importado
+import { AuthRedirectHandler } from './pages/auth/AuthRedirectHandler'; // Importado
 
 // Componente para proteger rotas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -43,6 +45,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} /> {/* Nova Rota */}
+              <Route path="/auth/callback" element={<AuthRedirectHandler />} /> {/* Nova Rota de Callback */}
               <Route path="/book/u/:userId" element={<BookingLink />} />
 
               {/* Rotas Protegidas (Dashboard) */}
@@ -81,12 +85,12 @@ function App() {
                   <Settings />
                 </ProtectedRoute>
               } />
-              <Route path="/dashboard/booking-link" element={ // Nova Rota
+              <Route path="/dashboard/booking-link" element={
                 <ProtectedRoute>
                   <BookingSettings />
                 </ProtectedRoute>
               } />
-              <Route path="/dashboard/manual-booking" element={ // Nova Rota de Agendamento Manual
+              <Route path="/dashboard/manual-booking" element={
                 <ProtectedRoute>
                   <ManualBooking />
                 </ProtectedRoute>

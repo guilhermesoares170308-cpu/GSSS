@@ -64,7 +64,7 @@ export const Login = () => {
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="block text-sm font-medium text-gray-700">Senha</label>
-                <Link to="#" className="text-xs font-medium text-pink-600 hover:underline">Esqueceu a senha?</Link>
+                <Link to="/forgot-password" className="text-xs font-medium text-pink-600 hover:underline">Esqueceu a senha?</Link>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
