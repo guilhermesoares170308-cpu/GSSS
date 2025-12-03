@@ -119,7 +119,7 @@ export const Hours = () => {
           ))}
 
         </div>
-        <div className="bg-gray-50 px-6 py-4 flex justify-end">
+        <div className="bg-gray-50 px-6 py-4 flex justify-center"> {/* Alterado de justify-end para justify-center */}
           <button 
             onClick={handleSave}
             disabled={loading}
