@@ -194,15 +194,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           <nav className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Início</Link>
             <Link to="#" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Funcionalidades</Link>
-            <Link to="/dashboard" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Dashboard</Link>
-            {/* NOVO BOTÃO DE TESTE */}
-            <Link 
-              to="/auth/callback?type=recovery" 
-              className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors border border-red-200 px-2 py-1 rounded-full"
-              title="Acesso Direto para Teste de Nova Senha"
-            >
-              TESTE: Nova Senha
-            </Link>
             <a href="#planos" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Planos</a>
           </nav>
 
