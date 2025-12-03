@@ -17,7 +17,7 @@ export const Inventory = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [newItem, setNewItem] = useState({ name: '', quantity: 0, unit: 'un', min_threshold: 5 });
+  const [newItem, setNewItem] = useState({ name: '', quantity: '' as number | string, unit: 'un', min_threshold: 5 });
 
   const fetchInventory = async () => {
     if (!user) return;
@@ -39,16 +39,22 @@ export const Inventory = () => {
     e.preventDefault();
     if (!user || !newItem.name) return;
     
+    const quantityValue = Number(newItem.quantity);
+    if (isNaN(quantityValue) || quantityValue < 0) {
+        showError("A quantidade deve ser um número válido e não negativo.");
+        return;
+    }
+
     const toastId = showLoading('Adicionando item...');
 
     try {
-        const { error } = await supabase.from('inventory').insert({ user_id: user.id, ...newItem });
+        const { error } = await supabase.from('inventory').insert({ user_id: user.id, ...newItem, quantity: quantityValue });
         if (error) throw error;
         
         showSuccess('Item adicionado ao estoque!');
         fetchInventory();
         setIsAdding(false);
-        setNewItem({ name: '', quantity: 0, unit: 'un', min_threshold: 5 });
+        setNewItem({ name: '', quantity: '', unit: 'un', min_threshold: 5 });
     } catch (error) {
         showError('Falha ao adicionar item.');
         console.error(error);
@@ -120,7 +126,8 @@ export const Inventory = () => {
                 min="0"
                 className="w-full p-2 border rounded-lg" 
                 value={newItem.quantity} 
-                onChange={e => setNewItem({...newItem, quantity: Number(e.target.value)})} 
+                onChange={e => setNewItem({...newItem, quantity: e.target.value})} 
+                placeholder="0"
               />
             </div>
             <div>
