@@ -43,8 +43,11 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       .eq('id', user.id)
       .single();
     
+    // Se houver business_hours no perfil, usa. Caso contrário, usa o default.
     if (profile?.business_hours) {
       setBusinessHours(profile.business_hours as unknown as BusinessHours);
+    } else {
+      setBusinessHours(defaultHours);
     }
 
     // Fetch Services

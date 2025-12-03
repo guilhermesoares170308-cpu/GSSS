@@ -7,13 +7,14 @@ export const Settings = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [profile, setProfile] = useState({ name: '', business_name: '' });
+  const [profile, setProfile] = useState({ name: '' });
 
   useEffect(() => {
     if (user) {
+        // Busca o nome do perfil na tabela 'profiles'
         supabase.from('profiles').select('name').eq('id', user.id).single()
         .then(({ data }) => {
-            if (data) setProfile({ name: data.name, business_name: '' }); // business_name seria um campo novo se quiséssemos adicionar
+            if (data) setProfile({ name: data.name || '' });
         });
     }
   }, [user]);
@@ -23,6 +24,7 @@ export const Settings = () => {
     if (!user) return;
     setLoading(true);
     
+    // Atualiza o nome na tabela 'profiles'
     const { error } = await supabase.from('profiles').update({
         name: profile.name,
         updated_at: new Date().toISOString()
