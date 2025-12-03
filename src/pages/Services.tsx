@@ -10,15 +10,25 @@ export const Services = () => {
     name: '',
     description: '',
     duration: 30,
-    price: 0
+    price: '' as number | string // Alterado para string vazia para começar em branco
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addService(newService);
+    
+    const priceValue = Number(newService.price);
+    if (isNaN(priceValue) || priceValue < 0) return; // Validação básica
+
+    addService({
+        ...newService,
+        price: priceValue // Garante que o preço seja um número ao salvar
+    } as any);
+    
     setIsAdding(false);
-    setNewService({ name: '', description: '', duration: 30, price: 0 });
+    setNewService({ name: '', description: '', duration: 30, price: '' });
   };
+
+  const availableDurations = [15, 30, 45, 60, 75, 90, 105, 120, 150, 180, 240]; // 240 minutos adicionados
 
   return (
     <div className="space-y-6">
@@ -57,7 +67,8 @@ export const Services = () => {
                   type="number" 
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                   value={newService.price}
-                  onChange={e => setNewService({...newService, price: Number(e.target.value)})}
+                  onChange={e => setNewService({...newService, price: e.target.value})}
+                  placeholder="0,00" // Adicionado placeholder
                 />
               </div>
               <div>
@@ -67,7 +78,7 @@ export const Services = () => {
                   value={newService.duration}
                   onChange={e => setNewService({...newService, duration: Number(e.target.value)})}
                 >
-                  {[15, 30, 45, 60, 75, 90, 105, 120, 150, 180].map(m => (
+                  {availableDurations.map(m => (
                     <option key={m} value={m}>{m} minutos</option>
                   ))}
                 </select>
