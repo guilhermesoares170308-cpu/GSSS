@@ -26,10 +26,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isBookingPage = location.pathname.includes('/book/u/');
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/forgot-password' || location.pathname === '/auth/callback';
   const isDashboard = location.pathname.includes('/dashboard');
 
-  // --- LAYOUT 1: PÁGINAS DE AUTH (Login/Register) ---
+  // --- LAYOUT 1: PÁGINAS DE AUTH (Login/Register/Forgot/Callback) ---
   if (isAuthPage) {
     return <>{children}</>;
   }
@@ -147,10 +147,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           <div className="p-4 border-t border-gray-100">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
               <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 font-bold">
-                {user?.name?.charAt(0) || 'U'}
+                {user?.user_metadata?.name?.charAt(0) || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{user?.name || 'Usuário'}</p>
+                <p className="text-sm font-medium text-gray-900 truncate">{user?.user_metadata?.name || 'Usuário'}</p>
                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
               </div>
               <button onClick={logout} className="text-gray-400 hover:text-red-500 transition-colors" title="Sair">
@@ -195,6 +195,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <Link to="/" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Início</Link>
             <Link to="#" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Funcionalidades</Link>
             <Link to="/dashboard" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Dashboard</Link>
+            {/* NOVO BOTÃO DE TESTE */}
+            <Link 
+              to="/auth/callback?type=recovery" 
+              className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors border border-red-200 px-2 py-1 rounded-full"
+              title="Acesso Direto para Teste de Nova Senha"
+            >
+              TESTE: Nova Senha
+            </Link>
             <a href="#planos" className="text-gray-600 hover:text-pink-600 font-medium transition-colors">Planos</a>
           </nav>
 
