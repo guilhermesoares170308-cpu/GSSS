@@ -10,38 +10,46 @@ const TimeInput = ({ value, onChange, disabled }: { value: string, onChange: (va
     value={value} 
     onChange={(e) => onChange(e.target.value)}
     disabled={disabled}
-    className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 outline-none disabled:bg-gray-100 disabled:text-gray-400 transition-colors"
+    className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 outline-none disabled:bg-gray-100 disabled:text-gray-400 transition-colors w-full"
   />
 );
 
 // Componente auxiliar para renderizar a linha de um dia
 const DayRow: React.FC<{ dayKey: keyof BusinessHours, label: string, schedule: DaySchedule, updateDay: (key: keyof BusinessHours, field: keyof DaySchedule, value: any) => void }> = ({ dayKey, label, schedule, updateDay }) => (
-    <div className="flex items-center justify-between py-4 border-b border-gray-100 last:border-b-0">
-        <div className="w-40">
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between py-4 border-b border-gray-100 last:border-b-0">
+        <div className="w-full md:w-40 mb-2 md:mb-0">
             <h3 className="font-bold text-gray-900">{label}</h3>
         </div>
-        <div className="flex items-center gap-4">
-            <label className="flex items-center cursor-pointer">
+        
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
+            {/* Checkbox de Ativo */}
+            <label className="flex items-center cursor-pointer shrink-0">
                 <input 
                     type="checkbox" 
                     checked={schedule.enabled}
                     onChange={(e) => updateDay(dayKey, 'enabled', e.target.checked)}
                     className="w-5 h-5 text-pink-600 rounded focus:ring-pink-500"
                 />
-                <span className="ml-2 text-sm text-gray-700">Ativo</span>
+                <span className="ml-2 text-sm text-gray-700 font-medium">Ativo</span>
             </label>
-            <div className="flex items-center gap-2">
-                <TimeInput 
-                    value={schedule.start} 
-                    onChange={(v) => updateDay(dayKey, 'start', v)} 
-                    disabled={!schedule.enabled}
-                />
-                <span className="text-gray-400">até</span>
-                <TimeInput 
-                    value={schedule.end} 
-                    onChange={(v) => updateDay(dayKey, 'end', v)} 
-                    disabled={!schedule.enabled}
-                />
+            
+            {/* Inputs de Horário */}
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex-1">
+                    <TimeInput 
+                        value={schedule.start} 
+                        onChange={(v) => updateDay(dayKey, 'start', v)} 
+                        disabled={!schedule.enabled}
+                    />
+                </div>
+                <span className="text-gray-400 shrink-0">até</span>
+                <div className="flex-1">
+                    <TimeInput 
+                        value={schedule.end} 
+                        onChange={(v) => updateDay(dayKey, 'end', v)} 
+                        disabled={!schedule.enabled}
+                    />
+                </div>
             </div>
         </div>
     </div>
