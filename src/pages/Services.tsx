@@ -22,14 +22,14 @@ export const Services = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Meus Serviços</h2>
           <p className="text-gray-500">Configure os serviços que seus clientes podem agendar.</p>
         </div>
         <button 
           onClick={() => setIsAdding(!isAdding)}
-          className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors flex items-center gap-2"
+          className="w-full sm:w-auto bg-pink-600 text-white px-4 py-3 rounded-xl hover:bg-pink-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-lg shadow-pink-200"
         >
           <Plus size={20} /> Novo Serviço
         </button>
