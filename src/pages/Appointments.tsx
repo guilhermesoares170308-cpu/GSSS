@@ -35,23 +35,23 @@ export const Appointments = () => {
           <table className="w-full text-left">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cliente</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Serviço</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Data & Hora</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider min-w-[120px]">Cliente</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider min-w-[120px]">Serviço</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider min-w-[150px]">Data & Hora</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider min-w-[100px]">Status</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right min-w-[80px]">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {sortedAppointments.map((appt) => (
                 <tr key={appt.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-medium text-gray-900">{appt.clientName}</div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-gray-700">{appt.serviceName}</div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-col text-sm">
                       <span className="font-medium text-gray-900 flex items-center gap-1">
                         <Calendar size={14} className="text-gray-400"/>
@@ -63,7 +63,7 @@ export const Appointments = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <span className={cn(
                       "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize",
                       appt.status === 'confirmed' && "bg-green-100 text-green-800",
@@ -75,7 +75,7 @@ export const Appointments = () => {
                       {appt.status === 'rescheduled' && 'Remarcado'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right whitespace-nowrap">
                     {appt.status === 'confirmed' && (
                       <button 
                         onClick={() => cancelAppointment(appt.id)}
