@@ -12,14 +12,24 @@ import {
   Calendar as CalendarIcon,
   Scissors,
   Copy,
-  Check
+  Check,
+  Loader2
 } from 'lucide-react';
 import { format, parseISO, isToday, isFuture } from 'date-fns';
 
 export const Dashboard = () => {
   const { appointments, services } = useNailify();
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const [copied, setCopied] = React.useState(false);
+
+  // Se o usuário ou os dados ainda estão carregando, mostramos um loader
+  if (isAuthLoading || !user) {
+    return (
+      <div className="flex justify-center items-center py-24">
+        <Loader2 className="animate-spin text-pink-600" size={48} />
+      </div>
+    );
+  }
 
   // Métricas Simples
   const todayAppointments = appointments.filter(a => isToday(parseISO(a.date)) && a.status !== 'cancelled');
@@ -29,6 +39,7 @@ export const Dashboard = () => {
   const totalRevenue = appointments
     .filter(a => a.status === 'confirmed')
     .reduce((acc, curr) => {
+      // Busca o preço do serviço usando o serviceId
       const service = services.find(s => s.id === curr.serviceId);
       return acc + (service?.price || 0);
     }, 0);
