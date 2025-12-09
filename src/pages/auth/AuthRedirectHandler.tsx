@@ -23,9 +23,11 @@ export const AuthRedirectHandler: React.FC = () => {
     }
   }, [user, navigate, type]);
 
-  // Lida com a confirmação de e-mail (geralmente o Supabase lida com isso automaticamente)
+  // Lida com a confirmação de e-mail
   useEffect(() => {
     if (type === 'signup') {
+      // O Supabase lida com a troca de token automaticamente ao carregar a página.
+      // Se chegamos aqui, a confirmação foi processada.
       setMessage('Seu e-mail foi confirmado com sucesso! Você pode fazer login agora.');
       setTimeout(() => navigate('/login', { replace: true }), 3000);
     }
