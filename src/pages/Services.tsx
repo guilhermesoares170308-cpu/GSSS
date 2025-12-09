@@ -5,7 +5,7 @@ import { Plus, Trash2, Clock, Loader2 } from 'lucide-react';
 import { showSuccess, showError, showLoading, dismissToast } from '../lib/toast';
 
 export const Services = () => {
-  const { services, addService, removeService } = useNailify();
+  const { services, addService, removeService, refreshData } = useNailify();
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newService, setNewService] = useState({
@@ -14,6 +14,10 @@ export const Services = () => {
     duration: 30,
     price: '' as number | string
   });
+  
+  // Assumimos que se services for null/undefined, estamos carregando (embora o contexto inicialize como [])
+  // Vamos usar o fato de que o refreshData é chamado no useEffect do contexto.
+  // Se a lista de serviços estiver vazia e não estivermos carregando, mostramos a mensagem.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +45,7 @@ export const Services = () => {
         setIsAdding(false);
         setNewService({ name: '', description: '', duration: 30, price: '' });
     } catch (error) {
-        showError('Falha ao adicionar serviço. Tente novamente.');
+        showError('Falha ao adicionar serviço. Verifique se você está logado e tente novamente.');
         console.error(error);
     } finally {
         setIsSubmitting(false);
@@ -65,6 +69,11 @@ export const Services = () => {
   };
 
   const availableDurations = [15, 30, 45, 60, 75, 90, 105, 120, 150, 180, 240];
+
+  // Se a lista de serviços estiver vazia e o refreshData ainda não tiver sido chamado,
+  // podemos assumir que estamos carregando ou que não há dados.
+  // Como não temos um estado de `isLoading` no NailifyContext, vamos confiar no `services.length`.
+  // Se o usuário estiver logado, a lista deve ser populada rapidamente.
 
   return (
     <div className="space-y-6">
