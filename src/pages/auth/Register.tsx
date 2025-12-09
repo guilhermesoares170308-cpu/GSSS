@@ -16,9 +16,9 @@ export const Register = () => {
     try {
       await register(name, email, password);
       
-      // Se o registro for bem-sucedido, redireciona para a página de confirmação pendente
-      navigate('/pending-confirmation', { state: { email } });
-      showSuccess('Verifique seu e-mail para confirmar sua conta!');
+      // Redireciona diretamente para o dashboard, assumindo que a confirmação de e-mail foi desativada no Supabase.
+      navigate('/dashboard', { replace: true });
+      showSuccess('Conta criada com sucesso! Bem-vinda ao Nailify.');
       
     } catch (err: any) {
       console.error(err);
