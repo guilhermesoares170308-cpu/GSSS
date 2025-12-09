@@ -106,13 +106,20 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         throw new Error("User not authenticated.");
     }
     
-    // Explicitly define payload to ensure correct types and structure
+    // Garantir que price e duration são números
+    const priceValue = Number(service.price);
+    const durationValue = Number(service.duration);
+
+    if (isNaN(priceValue) || isNaN(durationValue)) {
+        throw new Error("Price or duration is not a valid number.");
+    }
+
     const payload = {
       user_id: user.id,
       name: service.name,
-      description: service.description,
-      duration: service.duration,
-      price: Number(service.price),
+      description: service.description || null, // Garantir que seja null se vazio, não string vazia
+      duration: durationValue,
+      price: priceValue,
     };
 
     const { error } = await supabase.from('services').insert(payload);
