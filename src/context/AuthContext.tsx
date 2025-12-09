@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password,
       options: {
         data: {
-          name: name, // Corrigido para usar 'name'
+          name: name, // Garantindo que o nome seja passado
         },
       },
     });
