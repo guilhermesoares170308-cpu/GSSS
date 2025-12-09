@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Service, Appointment, BusinessHours } from '../types';
 import { useAuth } from './AuthContext';
 import { supabase } from '../lib/supabase';
@@ -38,7 +38,7 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [businessHours, setBusinessHours] = useState<BusinessHours>(defaultHours);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  const refreshData = async () => {
+  const refreshData = useCallback(async () => {
     if (!user) return;
 
     // Fetch Profile (Business Hours)
@@ -89,7 +89,7 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }));
       setAppointments(formattedAppts);
     }
-  };
+  }, [user]); // Depende apenas do usuário
 
   useEffect(() => {
     if (user) {
@@ -99,7 +99,7 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setAppointments([]);
       setBusinessHours(defaultHours);
     }
-  }, [user]);
+  }, [user, refreshData]); // Adicionado refreshData como dependência
 
   const addService = async (service: Omit<Service, 'id'>) => {
     if (!user) return;
@@ -107,12 +107,14 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       user_id: user.id,
       ...service
     });
-    if (!error) refreshData();
+    if (!error) await refreshData(); // Garantir que a atualização espere a inserção
+    if (error) throw error;
   };
 
   const removeService = async (id: string) => {
     const { error } = await supabase.from('services').delete().eq('id', id);
-    if (!error) refreshData();
+    if (!error) await refreshData();
+    if (error) throw error;
   };
 
   const updateBusinessHours = async (hours: BusinessHours) => {
@@ -126,6 +128,7 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
     
     if (!error) setBusinessHours(hours);
+    if (error) throw error;
   };
 
   const addAppointment = async (appt: Omit<Appointment, 'id' | 'status'>) => {
@@ -139,12 +142,14 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       end_time: appt.endTime,
       status: 'confirmed'
     });
-    if (!error) refreshData();
+    if (!error) await refreshData();
+    if (error) throw error;
   };
 
   const cancelAppointment = async (id: string) => {
     const { error } = await supabase.from('appointments').update({ status: 'cancelled' }).eq('id', id);
-    if (!error) refreshData();
+    if (!error) await refreshData();
+    if (error) throw error;
   };
 
   const rescheduleAppointment = async (id: string, newDate: string, newStartTime: string, newEndTime: string) => {
@@ -154,7 +159,8 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       end_time: newEndTime,
       status: 'rescheduled'
     }).eq('id', id);
-    if (!error) refreshData();
+    if (!error) await refreshData();
+    if (error) throw error;
   };
 
   return (
