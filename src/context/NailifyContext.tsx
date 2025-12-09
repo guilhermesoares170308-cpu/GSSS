@@ -102,19 +102,33 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [user, refreshData]); // Adicionado refreshData como dependência
 
   const addService = async (service: Omit<Service, 'id'>) => {
-    if (!user) return;
-    const { error } = await supabase.from('services').insert({
+    if (!user) {
+        throw new Error("User not authenticated.");
+    }
+    
+    // Explicitly define payload to ensure correct types and structure
+    const payload = {
       user_id: user.id,
-      ...service
-    });
-    if (!error) await refreshData(); // Garantir que a atualização espere a inserção
-    if (error) throw error;
+      name: service.name,
+      description: service.description,
+      duration: service.duration,
+      price: Number(service.price),
+    };
+
+    const { error } = await supabase.from('services').insert(payload);
+    
+    if (error) {
+        console.error("SUPABASE INSERT ERROR (Services):", error);
+        throw error;
+    }
+    
+    await refreshData();
   };
 
   const removeService = async (id: string) => {
     const { error } = await supabase.from('services').delete().eq('id', id);
-    if (!error) await refreshData();
     if (error) throw error;
+    await refreshData();
   };
 
   const updateBusinessHours = async (hours: BusinessHours) => {
@@ -142,14 +156,14 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       end_time: appt.endTime,
       status: 'confirmed'
     });
-    if (!error) await refreshData();
     if (error) throw error;
+    await refreshData();
   };
 
   const cancelAppointment = async (id: string) => {
     const { error } = await supabase.from('appointments').update({ status: 'cancelled' }).eq('id', id);
-    if (!error) await refreshData();
     if (error) throw error;
+    await refreshData();
   };
 
   const rescheduleAppointment = async (id: string, newDate: string, newStartTime: string, newEndTime: string) => {
@@ -159,8 +173,8 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       end_time: newEndTime,
       status: 'rescheduled'
     }).eq('id', id);
-    if (!error) await refreshData();
     if (error) throw error;
+    await refreshData();
   };
 
   return (
