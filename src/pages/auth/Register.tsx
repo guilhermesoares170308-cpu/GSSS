@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Mail, Lock, User, ArrowRight, Loader2, CheckCircle, ArrowLeft } from 'lucide-react';
+import { showSuccess, showError } from '../../lib/toast';
 
 export const Register = () => {
   const [name, setName] = useState('');
@@ -14,9 +15,15 @@ export const Register = () => {
     e.preventDefault();
     try {
       await register(name, email, password);
-      navigate('/dashboard');
-    } catch (err) {
+      
+      // Se o registro for bem-sucedido, redireciona para a página de confirmação pendente
+      navigate('/pending-confirmation', { state: { email } });
+      showSuccess('Verifique seu e-mail para confirmar sua conta!');
+      
+    } catch (err: any) {
       console.error(err);
+      // Supabase retorna um erro se o e-mail já estiver em uso, etc.
+      showError(err.message || 'Falha ao criar conta. Tente novamente.');
     }
   };
 

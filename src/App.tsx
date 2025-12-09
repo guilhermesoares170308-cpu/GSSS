@@ -16,8 +16,9 @@ import { BookingLink } from './pages/BookingLink';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
 import { ManualBooking } from './pages/ManualBooking';
-import { ForgotPassword } from './pages/auth/ForgotPassword'; // Importado
-import { AuthRedirectHandler } from './pages/auth/AuthRedirectHandler'; // Importado
+import { ForgotPassword } from './pages/auth/ForgotPassword';
+import { AuthRedirectHandler } from './pages/auth/AuthRedirectHandler';
+import { PendingConfirmation } from './pages/auth/PendingConfirmation'; // Importado
 
 // Componente para proteger rotas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -45,8 +46,9 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} /> {/* Nova Rota */}
-              <Route path="/auth/callback" element={<AuthRedirectHandler />} /> {/* Nova Rota de Callback */}
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/auth/callback" element={<AuthRedirectHandler />} />
+              <Route path="/pending-confirmation" element={<PendingConfirmation />} /> {/* Nova Rota */}
               <Route path="/book/u/:userId" element={<BookingLink />} />
 
               {/* Rotas Protegidas (Dashboard) */}
