@@ -117,7 +117,7 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const payload = {
       user_id: user.id,
       name: service.name,
-      description: service.description || null, // Garantir que seja null se vazio, não string vazia
+      description: service.description && service.description.trim() !== '' ? service.description : null, // Garante NULL se vazio
       duration: durationValue,
       price: priceValue,
     };
