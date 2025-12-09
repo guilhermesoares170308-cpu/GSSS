@@ -41,9 +41,14 @@ export const Services = () => {
         setIsAdding(false);
         setNewService({ name: '', description: '', duration: 30, price: '' });
     } catch (error) {
-        // O erro agora deve ser mais detalhado se for um problema de autenticação
-        showError('Falha ao adicionar serviço. Verifique se você está logado e tente novamente.');
         console.error(error);
+        
+        // Tenta extrair a mensagem de erro detalhada
+        const errorMessage = error instanceof Error && error.message.includes('Supabase Error') 
+            ? error.message 
+            : 'Falha ao adicionar serviço. Verifique se você está logado e tente novamente.';
+            
+        showError(errorMessage);
     } finally {
         setIsSubmitting(false);
         dismissToast(toastId);
@@ -145,7 +150,7 @@ export const Services = () => {
               <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
               <button 
                 type="submit" 
-                disabled={isSubmitting}
+                disabled={isSubmitting || isNailifyLoading} // Adicionado isNailifyLoading aqui
                 className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 flex items-center gap-2 disabled:opacity-50"
               >
                 {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : 'Salvar Serviço'}
