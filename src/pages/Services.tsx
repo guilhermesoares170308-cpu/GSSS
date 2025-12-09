@@ -1,34 +1,70 @@
 import React, { useState } from 'react';
 import { useNailify } from '../context/NailifyContext';
 import { formatCurrency } from '../lib/utils';
-import { Plus, Trash2, Clock } from 'lucide-react';
+import { Plus, Trash2, Clock, Loader2 } from 'lucide-react';
+import { showSuccess, showError, showLoading, dismissToast } from '../lib/toast';
 
 export const Services = () => {
   const { services, addService, removeService } = useNailify();
   const [isAdding, setIsAdding] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [newService, setNewService] = useState({
     name: '',
     description: '',
     duration: 30,
-    price: '' as number | string // Alterado para string vazia para começar em branco
+    price: '' as number | string
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const priceValue = Number(newService.price);
-    if (isNaN(priceValue) || priceValue < 0) return; // Validação básica
+    if (isNaN(priceValue) || priceValue < 0) {
+        showError("O preço deve ser um valor numérico positivo.");
+        return;
+    }
+    if (newService.duration <= 0) {
+        showError("A duração deve ser maior que zero.");
+        return;
+    }
 
-    addService({
-        ...newService,
-        price: priceValue // Garante que o preço seja um número ao salvar
-    } as any);
-    
-    setIsAdding(false);
-    setNewService({ name: '', description: '', duration: 30, price: '' });
+    setIsSubmitting(true);
+    const toastId = showLoading('Adicionando serviço...');
+
+    try {
+        await addService({
+            ...newService,
+            price: priceValue // Garante que o preço seja um número ao salvar
+        } as any);
+        
+        showSuccess('Serviço adicionado com sucesso!');
+        setIsAdding(false);
+        setNewService({ name: '', description: '', duration: 30, price: '' });
+    } catch (error) {
+        showError('Falha ao adicionar serviço. Tente novamente.');
+        console.error(error);
+    } finally {
+        setIsSubmitting(false);
+        dismissToast(toastId);
+    }
   };
 
-  const availableDurations = [15, 30, 45, 60, 75, 90, 105, 120, 150, 180, 240]; // 240 minutos adicionados
+  const handleDelete = async (id: string) => {
+      if(!confirm('Tem certeza que deseja excluir este serviço? Todos os agendamentos relacionados serão afetados.')) return;
+      
+      const toastId = showLoading('Excluindo serviço...');
+      try {
+          await removeService(id);
+          showSuccess('Serviço excluído.');
+      } catch (error) {
+          showError('Falha ao excluir serviço.');
+          console.error(error);
+      } finally {
+          dismissToast(toastId);
+      }
+  };
+
+  const availableDurations = [15, 30, 45, 60, 75, 90, 105, 120, 150, 180, 240];
 
   return (
     <div className="space-y-6">
@@ -65,10 +101,11 @@ export const Services = () => {
                 <input 
                   required
                   type="number" 
+                  step="0.01" // Permite valores decimais
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                   value={newService.price}
                   onChange={e => setNewService({...newService, price: e.target.value})}
-                  placeholder="0,00" // Adicionado placeholder
+                  placeholder="0.00"
                 />
               </div>
               <div>
@@ -97,7 +134,13 @@ export const Services = () => {
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
-              <button type="submit" className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">Salvar Serviço</button>
+              <button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 flex items-center gap-2 disabled:opacity-50"
+              >
+                {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : 'Salvar Serviço'}
+              </button>
             </div>
           </form>
         </div>
@@ -115,7 +158,7 @@ export const Services = () => {
               </div>
             </div>
             <button 
-              onClick={() => removeService(service.id)}
+              onClick={() => handleDelete(service.id)}
               className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
               title="Remover serviço"
             >
