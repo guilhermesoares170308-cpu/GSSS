@@ -2,8 +2,9 @@ import React from 'react';
 import { useNailify } from '../context/NailifyContext';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, Clock, XCircle, CheckCircle, RotateCcw } from 'lucide-react';
+import { Calendar, Clock, XCircle, CheckCircle, RotateCcw, Plus } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { Link } from 'react-router-dom';
 
 export const Appointments = () => {
   const { appointments, cancelAppointment } = useNailify();
@@ -16,9 +17,17 @@ export const Appointments = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Meus Agendamentos</h2>
-        <p className="text-gray-500">Gerencie os horários marcados pelos seus clientes.</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Meus Agendamentos</h2>
+          <p className="text-gray-500">Gerencie os horários marcados pelos seus clientes.</p>
+        </div>
+        <Link 
+          to="/dashboard/manual-booking" 
+          className="w-full sm:w-auto bg-pink-600 text-white px-4 py-3 rounded-xl hover:bg-pink-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-lg shadow-pink-200"
+        >
+          <Plus size={20} /> Novo Agendamento
+        </Link>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
