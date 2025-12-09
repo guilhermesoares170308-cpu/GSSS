@@ -113,7 +113,6 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const addService = async (service: Omit<Service, 'id'>) => {
     if (!user) {
-        // Lançar um erro mais específico para debug
         throw new Error("AUTH_REQUIRED: User not authenticated or session not loaded.");
     }
     
@@ -124,6 +123,9 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (isNaN(priceValue) || isNaN(durationValue)) {
         throw new Error("Price or duration is not a valid number.");
     }
+    
+    // Log para debug
+    console.log("Attempting to insert service for user ID:", user.id);
 
     const payload = {
       user_id: user.id,
