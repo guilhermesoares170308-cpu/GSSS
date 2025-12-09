@@ -43,10 +43,12 @@ export const Services = () => {
     } catch (error) {
         console.error(error);
         
-        // Tenta extrair a mensagem de erro detalhada
-        const errorMessage = error instanceof Error && error.message.includes('Supabase Error') 
-            ? error.message 
-            : 'Falha ao adicionar serviço. Verifique se você está logado e tente novamente.';
+        let errorMessage = 'Falha ao adicionar serviço. Verifique se você está logado e tente novamente.';
+        
+        // Tentativa de extrair a mensagem de erro do Supabase
+        if (error && typeof error === 'object' && 'message' in error) {
+            errorMessage = error.message;
+        }
             
         showError(errorMessage);
     } finally {
@@ -150,7 +152,7 @@ export const Services = () => {
               <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
               <button 
                 type="submit" 
-                disabled={isSubmitting || isNailifyLoading} // Adicionado isNailifyLoading aqui
+                disabled={isSubmitting || isNailifyLoading}
                 className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 flex items-center gap-2 disabled:opacity-50"
               >
                 {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : 'Salvar Serviço'}
