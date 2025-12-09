@@ -17,6 +17,7 @@ interface NailifyContextType {
   rescheduleAppointment: (id: string, newDate: string, newStartTime: string, newEndTime: string) => Promise<void>;
   
   refreshData: () => Promise<void>;
+  isLoading: boolean; // Adicionado
 }
 
 const defaultDaySchedule = { enabled: true, start: '09:00', end: '18:00' };
@@ -37,57 +38,65 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [services, setServices] = useState<Service[]>([]);
   const [businessHours, setBusinessHours] = useState<BusinessHours>(defaultHours);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // Novo estado
 
   const refreshData = useCallback(async () => {
     if (!user) return;
+    setIsLoading(true); // Inicia o carregamento
 
-    // Fetch Profile (Business Hours)
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('business_hours')
-      .eq('id', user.id)
-      .single();
-    
-    // Se houver business_hours no perfil, usa. Caso contrário, usa o default.
-    if (profile?.business_hours) {
-      // Merge com default para garantir que todos os 7 dias existam, caso o formato antigo tenha sido salvo
-      const fetchedHours = profile.business_hours as unknown as BusinessHours;
-      setBusinessHours({ ...defaultHours, ...fetchedHours });
-    } else {
-      setBusinessHours(defaultHours);
-    }
+    try {
+        // Fetch Profile (Business Hours)
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('business_hours')
+          .eq('id', user.id)
+          .single();
+        
+        // Se houver business_hours no perfil, usa. Caso contrário, usa o default.
+        if (profile?.business_hours) {
+          // Merge com default para garantir que todos os 7 dias existam, caso o formato antigo tenha sido salvo
+          const fetchedHours = profile.business_hours as unknown as BusinessHours;
+          setBusinessHours({ ...defaultHours, ...fetchedHours });
+        } else {
+          setBusinessHours(defaultHours);
+        }
 
-    // Fetch Services
-    const { data: servicesData } = await supabase
-      .from('services')
-      .select('*')
-      .eq('user_id', user.id);
-    
-    if (servicesData) {
-      setServices(servicesData);
-    }
+        // Fetch Services
+        const { data: servicesData } = await supabase
+          .from('services')
+          .select('*')
+          .eq('user_id', user.id);
+        
+        if (servicesData) {
+          setServices(servicesData);
+        }
 
-    // Fetch Appointments
-    const { data: apptsData } = await supabase
-      .from('appointments')
-      .select(`
-        *,
-        services (
-          name
-        )
-      `)
-      .eq('user_id', user.id);
-    
-    if (apptsData) {
-      const formattedAppts = apptsData.map((a: any) => ({
-        ...a,
-        serviceName: a.services?.name || 'Serviço Removido',
-        serviceId: a.service_id,
-        clientName: a.client_name,
-        startTime: a.start_time,
-        endTime: a.end_time
-      }));
-      setAppointments(formattedAppts);
+        // Fetch Appointments
+        const { data: apptsData } = await supabase
+          .from('appointments')
+          .select(`
+            *,
+            services (
+              name
+            )
+          `)
+          .eq('user_id', user.id);
+        
+        if (apptsData) {
+          const formattedAppts = apptsData.map((a: any) => ({
+            ...a,
+            serviceName: a.services?.name || 'Serviço Removido',
+            serviceId: a.service_id,
+            clientName: a.client_name,
+            startTime: a.start_time,
+            endTime: a.end_time
+          }));
+          setAppointments(formattedAppts);
+        }
+    } catch (error) {
+        console.error("Error refreshing Nailify data:", error);
+    } finally {
+        setIsLoading(false); // Finaliza o carregamento
     }
   }, [user]); // Depende apenas do usuário
 
@@ -98,12 +107,14 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setServices([]);
       setAppointments([]);
       setBusinessHours(defaultHours);
+      setIsLoading(false); // Se não há usuário, não há dados para carregar
     }
   }, [user, refreshData]); // Adicionado refreshData como dependência
 
   const addService = async (service: Omit<Service, 'id'>) => {
     if (!user) {
-        throw new Error("User not authenticated.");
+        // Lançar um erro mais específico para debug
+        throw new Error("AUTH_REQUIRED: User not authenticated or session not loaded.");
     }
     
     // Garantir que price e duration são números
@@ -195,7 +206,8 @@ export const NailifyProvider: React.FC<{ children: React.ReactNode }> = ({ child
       addAppointment,
       cancelAppointment,
       rescheduleAppointment,
-      refreshData
+      refreshData,
+      isLoading // Exportando o estado de carregamento
     }}>
       {children}
     </NailifyContext.Provider>
